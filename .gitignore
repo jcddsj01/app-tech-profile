@@ -1,0 +1,7 @@
+# Ambiente virtual
+venv-tech-profile/
+.env
+
+# Cache e arquivos temporários
+__pycache__/
+*.pyc

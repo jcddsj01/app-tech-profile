@@ -1,0 +1,26 @@
+- Criar o ambiente virtual (Windows)
+python -m venv nome-ambiente
+
+- Ativar o ambiente virtual (Windows)
+.\nome-ambiente\Scripts\activate.bat
+
+- Instalar as dependências (bibliotecas e suas versões)
+pip install -r requirements.txt
+
+- Atualizar o pip se pedir
+python.exe -m pip install --upgrade pip
+
+- Criar o arquivo .env
+Fazer igual o exemplo do arquivo ".env.example"
+
+- Criar o arquivo .gitignore
+Adicionar o .env
+Adicionar o ambiente virtual
+
+- Criar uma conta no railway
+
+- Criar o banco de dados, tabelas, inserção de dados
+Executar o arquivo banco_de_dados/scripts/criar_banco_de_dados_e_tabelas.py
+
+- Testar o projeto
+Executar o streamlit run app.py
