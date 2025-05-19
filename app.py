@@ -4,14 +4,20 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-# Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
+# Detectar ambiente: local ou nuvem (Streamlit Cloud)
+IS_DEPLOYED = "MYSQL_HOST" in st.secrets
 
-# Função auxiliar para obter variáveis de ambiente
+# Carregar .env apenas se estiver local
+if not IS_DEPLOYED:
+    load_dotenv()
+
+# Função para obter variáveis de ambiente de forma segura
 def get_env(key):
+    if IS_DEPLOYED:
+        return st.secrets[key]
     return os.getenv(key)
 
-# Conexão com banco de dados selecionado
+# Conexão com banco de dados
 def conectar_database_selecionado():
     return mysql.connector.connect(
         host=get_env("MYSQL_HOST"),
@@ -21,6 +27,7 @@ def conectar_database_selecionado():
         database=get_env("MYSQL_DB")
     )
 
+# === Funções de consulta ===
 def consultar_profissionais():
     conn = conectar_database_selecionado()
     cursor = conn.cursor()
@@ -93,6 +100,7 @@ def consultar_localizacoes():
         conn.close()
     return localizacoes, colunas
 
+# === Funções auxiliares ===
 def formatar_reais(valor):
     return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
 
@@ -101,13 +109,13 @@ def formatar_data(data):
 
 def formatar_localizacao_remoto(remoto):
     return "Sim" if remoto == 1 else "Não"
-    
-# Configuração inicial
+
+# === Configuração do Streamlit ===
 st.set_page_config(page_title="TechProfile", layout="centered")
 st.title("TechProfile - Plataforma Inteligente de Análise de dados de Profissionais de TI")
-st.text("A TechProfile é uma plataforma inteligente voltada para a análise de dados de profissionais de tecnologia. Você poderá obter informações sobre profissionais, Habilidades, experiências, salários e localização.")
+st.text("A TechProfile é uma plataforma inteligente voltada para a análise de dados de profissionais de tecnologia. Você poderá obter informações sobre profissionais, habilidades, experiências, salários e localização.")
 
-
+# === Filtro ===
 def filtrar_profissional():
     st.sidebar.header("🔍 Filtro de Profissionais")
     profissionais, colunas = consultar_profissionais()
@@ -120,7 +128,6 @@ def filtrar_profissional():
         default=df_profissionais["GENERO"].unique()
     )
 
-    # Filtro:
     somente_generos = st.sidebar.checkbox("Mostrar apenas os gêneros", value=False)
 
     senioridade_opcao = st.sidebar.multiselect(
@@ -131,13 +138,11 @@ def filtrar_profissional():
 
     somente_senioridades = st.sidebar.checkbox("Mostrar apenas as senioridades", value=False)
 
-    # Aplicar filtros
     dados_filtrados = df_profissionais[
         (df_profissionais["GENERO"].isin(genero_opcao)) &
         (df_profissionais["SENIORIDADE"].isin(senioridade_opcao))
     ]
 
-    # Exibir resultado conforme o filtro
     if somente_senioridades:
         st.write(dados_filtrados["SENIORIDADE"])
     elif somente_generos:
@@ -145,7 +150,7 @@ def filtrar_profissional():
     else:
         st.dataframe(dados_filtrados, use_container_width=True)
 
+# === Execução principal ===
 if __name__ == "__main__":
-    # Mostrar dados
     st.subheader("👥 Profissionais")
     filtrar_profissional()

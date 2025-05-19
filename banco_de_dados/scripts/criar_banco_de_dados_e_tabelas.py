@@ -117,7 +117,7 @@ def gerar_dados_profissionais():
     cursor = conn.cursor()
     nomes_usados = set()
     emails_usados = set()
-    total_para_gerar = 5
+    total_para_gerar = 50
     criados = 0
     try:
         while criados < total_para_gerar:
