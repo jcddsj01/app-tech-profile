@@ -4,17 +4,11 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-# Detectar ambiente: local ou nuvem (Streamlit Cloud)
-IS_DEPLOYED = "MYSQL_HOST" in st.secrets
-
-# Carregar .env apenas se estiver local
-if not IS_DEPLOYED:
-    load_dotenv()
+# Carregar .env localmente
+load_dotenv()
 
 # Função para obter variáveis de ambiente de forma segura
 def get_env(key):
-    if IS_DEPLOYED:
-        return st.secrets[key]
     return os.getenv(key)
 
 # Conexão com banco de dados
